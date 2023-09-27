@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+
+    <title>Expense traker - Home</title>
+
+    <style>
+        /* body{
+        justify-content: center;
+
+      } */
+
+        #call {
+            display: flex;
+        }
+
+        form {
+
+            border: 1px solid rgb(0, 157, 255);
+            background-color: white;
+            margin-left: 5%;
+            height: 700px;
+            align-items: center;
+        }
+
+        .item {
+            margin-top: 5px;
+            margin-left: 5px;
+        }
+
+        h4 {
+            /* justify-content: center; */
+            text-align: center;
+            /* margin-left: 40%; */
+        }
+
+        p {
+            text-align: center;
+            /* margin-left: 15%; */
+        }
+
+        .rat {
+            background-color: rgb(0, 157, 255);
+            color: white;
+            width: 100%;
+            border: 3px solid white;
+            text-align: center;
+
+        }
+
+        .new {
+            background-color: rgb(0, 157, 255);
+            color: white;
+        }
+
+        .listi {
+            margin-top: 5px;
+            height: 550px;
+        }
+
+        #details {
+            width: 100%;
+            height: 550px;
+            /* margin-left: 30%; */
+        }
+
+        .blue {
+            background-color: grey;
+        }
+
+        .contain {
+
+            display: flex;
+            margin-top: 10px;
+        }
+
+        .fstCont {
+            width: 50%;
+        }
+
+        .detailCon {
+            width: 50%;
+            background-color: white;
+            border: 5px solid rgb(0, 157, 255);
+            height: 550px;
+            margin-right: 15px;
+
+
+        }
+
+        #update {
+            background-color: aqua;
+            color: black;
+            font-size: 25px;
+        }
+
+        #delBtn {
+            margin-left: 10px;
+
+        }
+
+        body {
+            background-color: rgb(52, 117, 95);
+        }
+
+        #premium {
+            background-color: goldenrod;
+            border: none;
+        }
+
+        #premium1 {
+            background-color: goldenrod;
+            border: none;
+        }
+
+        #premium2 {
+            background-color: goldenrod;
+            border: none;
+        }
+
+        #member {
+            color: goldenrod;
+        }
+
+        #pagination {
+            display: flex;
+            padding: 20px;
+        }
+
+        /* Extra small devices (phones, 600px and down) */
+        @media only screen and (max-width: 600px) {
+
+
+            .contain {
+
+                display: grid;
+                /* margin-top: 10px; */
+                /* border: 2ox solid red; */
+            }
+
+            .fstCont {
+                width: 100%;
+            }
+
+            .detailCon {
+                width: 100%;
+                background-color: white;
+                border: 5px solid rgb(0, 157, 255);
+                height: 650px;
+                margin: 15px;
+                margin-right: 15px;
+                padding: 10px;
+
+
+            }
+
+            #details {
+                width: 100%;
+                height: 550px;
+                /* border: 2px solid red; */
+                /* margin-left: 30%; */
+            }
+
+
+        }
+
+        /* Small devices (portrait tablets and large phones, 600px and up) */
+        @media only screen and (min-width: 600px) {
+            .detailCon {
+                width: 50%;
+                background-color: white;
+                border: 5px solid rgb(0, 157, 255);
+                height: 650px;
+                margin: 15px;
+                margin-right: 15px;
+                padding: 10px;
+
+
+            }
+
+            #details {
+                width: 100%;
+                height: 550px;
+                /* border: 2px solid red; */
+                /* margin-left: 30%; */
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="contain">
+        <div class="fstCont">
+
+            <form>
+                <button id="premium" type="button" class="btn btn-secondary">Buy
+                    Premium</button>
+
+                <h5 id="member" hidden>Primium Member</h5>
+                <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+                <p id="userName"></p>
+
+                <h4></i>Enter Your Expense </h4>
+                <p id="token"></p>
+
+                <hr>
+
+                <div class="form-group">
+                    <label>Choose Expense Amount </label>
+                    <select class="form-control" id="expense">
+                        <option>100</option>
+                        <option>200</option>
+                        <option>300</option>
+                        <option>400</option>
+                        <option>500</option>
+                    </select>
+                </div>
+
+
+
+                <div class="form-group">
+                    <label for="">Enter Description:</label>
+                    <input type="text" required class="form-control" id="description"
+                        placeholder="Enter description here">
+                </div>
+
+
+
+
+                <div class="form-group">
+                    <label for="exampleFormControlSelect1">Choose a Category</label>
+                    <select class="form-control" required id="category">
+                        <option>Comedy</option>
+                        <option>Action</option>
+                        <option>Drama</option>
+                        <option>Horror</option>
+                        <option>Science Fiction</option>
+                    </select>
+                </div>
+
+
+
+
+                <button class="rat" type="submit" id="mouseover">Submit</button>
+                <button class="rat" type="submit" hidden id="update">Update</button>
+                <!-- <button class="rat" type="submit" id="mouseover" onclick="consolevalue(event)">Submit</button>
+                <button class="rat" type="submit" hidden id="update" onclick="updateData(event)">Update</button> -->
+
+                <button id="leadBoard" type="button" hidden class="btn btn-secondary">LeadBoard</button>
+
+
+                <button id="downloadexpense" hidden class="btn btn-secondary">Download
+                    <!-- <button onclick="download()" id="downloadexpense" hidden class="btn btn-secondary">Download -->
+                    File</button>
+
+                <ul id="leadBoardDetails">
+                    <!-- <li class="tem">Name</li> -->
+                </ul>
+            </form>
+
+        </div>
+        <div class="detailCon">
+            <button id="premium1" type="button" class="btn btn-secondary">Log out</button>
+            <!-- <button id="premium1" type="button" class="btn btn-secondary" onclick="logOut(event)">Log out</button> -->
+
+            <h4>Expense Details</h4>
+            <hr>
+            <ol id="details" class="list">
+
+            </ol>
+            <div id="pagination">
+                <div id="pages"></div>
+                <div class="form-group">
+                    <select class="form-control" id="pageLimit">
+                        <option>2</option>
+                        <option>4</option>
+                        <option>6</option>
+                        <option>8</option>
+                        <option>10</option>
+                    </select>
+                </div>
+                <button id="premium2" type="button" class="btn btn-secondary">Ok</button>
+                <!-- <button id="premium2" type="button" class="btn btn-secondary" onclick="getDetails(event)">Ok</button> -->
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+
+
+<script src="./expenseData.js">
+
+
+
+</script>
+
+</html>
