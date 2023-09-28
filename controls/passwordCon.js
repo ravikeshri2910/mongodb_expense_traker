@@ -1,161 +1,152 @@
+const Sib = require("sib-api-v3-sdk");
+require("dotenv").config();
+const uuid = require("uuid");
+const bcrypt = require("bcrypt");
+const User = require('../models/userSinup')
+const Forgotpassword = require("../models/forgetPassRequest");
+require("dotenv").config();
 
-const Sib = require('sib-api-v3-sdk');
-require('dotenv').config();
+const forgotpassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    console.log("EMAIL", user);
+    if (user) {
+      const id = uuid.v4(); //generate unique id for password link
+      const client = Sib.ApiClient.instance;
+      let apiKey = client.authentications["api-key"];
+      apiKey.apiKey = process.env.API_KEY;
 
-const jwt = require('jsonwebtoken');
-const uuid = require('uuid')
-const bcrypt = require('bcrypt')
-const SinUp = require('../models/userSinup')
-const ForgetPasswordtable = require('../models/forgetPassRequest');
-const { error } = require('console');
+      const transEmailAPi = new Sib.TransactionalEmailsApi();
+      const sender = {
+        email: "prabhatsingh5725@gmail.com",
+        name: "Expense traker",
+      };
+      const receivers = [
+        {
+          email: email,
+        },
+      ];
 
+      await transEmailAPi.sendTransacEmail({
+        sender,
+        to: receivers,
+        subject: "Verification",
+        textContent: "Click on reset",
+        htmlContent: `<a href="http://localhost:4000/password/resetpassword/${id}">http://localhost:4000/password/resetpassword/${id}</a>`,
+      });
 
-exports.forgetPassword = async (req, res) => {
+      await Forgotpassword.create({ id: id, active: true, userId: user._id });
+      res.status(201).json({
+        message: "Link to reset password sent to your mail ",
+        sucess: true,
+      });
+    } else {
+      throw new Error("User doesnt exist");
+    }
+  } catch (err) {
+    console.error(err);
+    res.json({ message: err, sucess: false });
+  }
+};
 
-    try {
-        const email = req.body.email
-        console.log(email)
+const resetpassword = (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log(id);
+    const forgotpasswordrequest = Forgotpassword.findOne({ id });
+    // console.log(forgotpasswordrequest, "forgotpasswordrequest");
+    if (forgotpasswordrequest) {
+      res.status(200).send(`<html>
+                                        <body>
+                                         <form action="/password/updatepassword/${id}" method="get">
+                                             <label for="newpassword">Enter New password</label>
+                                             <input name="newpassword" class="new" type="password" required></input>
+                                             <button id="reset">reset password</button>
+                                         </form>
 
-        const user = await SinUp.findOne( { email: email  })
+                                         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.23.0/axios.js"></script>
+                                         <script>
+                                         const reset=document.getElementById('reset');
+                                         reset.addEventListener('click',updatePassword);
 
-        if (user) {
-            // console.log(user)
+                                          async function updatePassword(e){
+                                            try{
+                                                 e.preventDefault();
+                                                 const pass=document.querySelector('.new').value;
+                                                 const obj={
+                                                    npass:pass
+                                                 }
+                                                 console.log(obj);
+                            const res=await axios.post("http://localhost:4000/password/updatepassword/${id}",obj)             
+                                               alert(res.data.msg);
+                                            }
+                                         catch(e){
+                                          console.log(e);
+                                         }
 
-            const id = uuid.v4();
+                                             }
+                                         </script>   
+                                     </body>    
+                                     </html>`);
+    }
+    res.end();
+  } catch (err) {
+    console.log(err);
+    res.json({ error: err, sucess: false });
+  }
+};
 
-            const client = Sib.ApiClient.instance;
+const updatepassword = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const newpassword = req.body.npass;
 
-            var apiKey = client.authentications['api-key'];
-            apiKey.apiKey = process.env.API_KEY
+    console.log("newPassword", newpassword);
+    // Find the ForgotPassword entry by its ID
+    const forgotUser = await Forgotpassword.findOne({ id: id }); //_id=objectid
 
-            const tranEmailApi = new Sib.TransactionalEmailsApi()
+    console.log(forgotUser);
+    if (!forgotUser || !forgotUser.active) {
+      return res.status(201).json({ msg: "Link Expired" });
+    }
 
-            const sender = {
-              
-                email: process.env.SIB_USER,
-                name:  process.env.SIB_NAME
-               
-            }
+    // Find the user by their ID
+    const user = await User.findOne({ _id: forgotUser.userId });
+    console.log("user", user);
+    if (user) {
+      const saltRounds = 10;
 
-            const recevers = [{
-                email: email
-            }]
+      // Hash the new password
+      const hash = await bcrypt.hash(newpassword, saltRounds);
 
-            await tranEmailApi.sendTransacEmail({
-                sender,
-                to: recevers,
-                subject: `Otp verification`,
-                textContent: `Click on Reset`,
-                htmlContent: `<a href = "http://localhost:4000/password/resetpassword/${id}">http://localhost:4000/password/resetpassword/${id}</a>`
-            })
+      // Update the user's password
+      const resp = await User.findOneAndUpdate(
+        { _id: user._id },
+        { password: hash }
+      );
 
-            await ForgetPasswordtable.create({
-                id: id,
-                isActive: true,
-                sinupId: user.id
-            })
+      await resp.save();
+      console.log("resss", resp);
 
-           
-            res.status(201).json({ msg: 'Email sent' })
-        } else {
-            throw new error('User not exist')
-        }
-    } catch (err) { console.log(err) }
-}
+      // Update the forgetTable
+      forgotUser.active = false;
+      await forgotUser.save();
 
+      return res
+        .status(201)
+        .json({ msg: "Successfully updated the new password" });
+    } else {
+      return res.status(404).json({ error: "No user exists", success: false });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(403).json({ error, success: false });
+  }
+};
 
-exports.resetPassword = async (req, res) => {
-
-    try {
-        const id = req.params.id
-
-        let forgetRequest = await ForgetPasswordtable.findOne({ where: { id: id } })
-
-        if (forgetRequest) {
-           
-
-            res.status(200).send(
-
-                `<!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Reset password</title>
-            </head>
-            <body>
-                
-            
-                <foem action="/password/updatePassword/${id}" method="GET">
-                    <label for="newPassword">Enter Your new Password</label>
-                    <input id="newpassword" name="newPassword" type="text"></foem>
-                    <button id="submit">Reset Password</button>
-            
-                </form>
-            </body>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
-            <script>
-                const submit = document.getElementById('submit')
-                submit.addEventListener('click',updatePassword)
-            
-                async function updatePassword(e){
-                    e.preventDefault()
-            
-                    const npass = document.getElementById('newpassword').value
-                    console.log(npass)
-                    const obj = {
-                        npassword : npass
-                    }
-            
-                    const res = await axios.post("http://localhost:4000/password/updatePassword/${id}",obj)
-            
-                    // console.log(res)
-
-                    alert(res.data.msg)
-               
-            
-                }
-            </script>
-            </html>`
-            )
-        }
-        res.end()
-
-
-
-
-    } catch (err) { console.log(err) }
-}
-
-
-exports.updatePassword = async (req, res) => {
-    try {
-        const id = req.params.id
-
-        const newPassword = req.body.npassword
-
-        // console.log(newPassword, id)
-
-        let forgetTable = await ForgetPasswordtable.findOne({ where: { id: id } })
-
-        if (forgetTable.isActive === false) {
-            return res.status(201).json({ msg: 'Link expired' })
-        }
-
-        let user = await SinUp.findOne({ where: { id: forgetTable.sinupId } })
-
-        const saltrounds = 10;
-        bcrypt.hash(newPassword, saltrounds, async (err, hash) => {
-            console.log(err)
-            await user.update({
-                passWord: hash
-            })
-        })
-
-        await forgetTable.update({ isActive: false })
-        res.status(201).json({ msg: 'Updated new password' })
-
-    } catch (err) { console.log(err) }
-
-
-}
+module.exports = {
+  forgotpassword,
+  updatepassword,
+  resetpassword,
+};

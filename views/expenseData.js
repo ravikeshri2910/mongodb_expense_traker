@@ -1,4 +1,4 @@
-document.getElementById('premium').addEventListener("click",buyPremium)
+// document.getElementById('premium').addEventListener("click",buyPremium)
 document.getElementById('mouseover').addEventListener("click",consolevalue)
 document.getElementById('update').addEventListener("click",updateData)
 document.getElementById('downloadexpense').addEventListener("click",download)

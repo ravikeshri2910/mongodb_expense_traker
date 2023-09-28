@@ -12,5 +12,7 @@ async function passwordForget(event) {
     const res = await axios.post("http://localhost:4000/password/forgotpassword", obj)
    
     console.log(res)
+    alert('PassWord resent link sent on registered Email')
+    window.location.href = "login.html"
 
 }
