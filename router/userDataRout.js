@@ -11,7 +11,7 @@ router.post('/expense-sinup-data', userControl.sinUpRoute)
 router.post('/expense-login-data', userControl.loginRoute)
 
 
-router.get('/download'  ,authorization.authenticateAddExpense, userControl.download)
+router.get('/download',authorization.authenticateAddExpense, userControl.download)
 
 
 

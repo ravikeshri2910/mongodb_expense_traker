@@ -77,8 +77,7 @@ app.use('/password', passwordRouter)
 
 mongoose
     .connect(
-        // 'mongodb+srv://maximilian:9u4biljMQc4jjqbe@cluster0-ntrwp.mongodb.net/shop?retryWrites=true'
-        // KD9EIW1WdPSpiG1n
+      
         'mongodb+srv://ravikeshri2910:KD9EIW1WdPSpiG1n@cluster0.nqcwyrc.mongodb.net/expenseTraker?retryWrites=true&w=majority'
 
     )

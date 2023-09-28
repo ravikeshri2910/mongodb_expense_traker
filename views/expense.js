@@ -62,15 +62,20 @@ async function getDetails(page) {
         leadBoard.hidden = false;
         
         let pageLimit = document.getElementById('pageLimit').value
-    
+        
+        let obj = {
+            pageLimit,
+            page
+        }
 
 
-        const site = `http://localhost:4000/logIn/get-data/${page}/${pageLimit}`
+        const site = `http://localhost:4000/logIn/get-data`
+        // const site = `http://localhost:4000/logIn/get-data/${page}/${pageLimit}`
        
         // const site = `http://3.80.172.222:4000/logIn/get-data/${page}/${pageLimit}`
 
         let token = localStorage.getItem('token')
-        let res = await axios.get(site, { headers: { "Authorization": token } })
+        let res = await axios.post(site,obj, { headers: { "Authorization": token } })
         console.log(res)
 
         document.getElementById('pageLimit').value = pageLimit
@@ -232,9 +237,9 @@ async function deleteData(event, id) {
         event.preventDefault();
  
         let token = localStorage.getItem('token')
-        let site = `http://localhost:4000/logIn/raat-data/${id}`
+        let site = `http://localhost:4000/logIn/delete-data/${id}`
         // let site = `http://3.80.172.222:4000/logIn/raat-data/${id}`
-        let res = await axios.get(site, { headers: { "Authorization": token } })
+        let res = await axios.delete(site, { headers: { "Authorization": token } })
         getDetails()
         console.log(res)
         if (res.status === 201) {
@@ -305,7 +310,7 @@ async function updateData(event) {
         let site = `http://localhost:4000/logIn/updated-data`
         // let site = `http://3.80.172.222:4000/logIn/updated-data`
 
-        let res = await axios.post(site, obj, { headers: { "Authorization": token } })
+        let res = await axios.put(site, obj, { headers: { "Authorization": token } })
 
   
         getDetails()

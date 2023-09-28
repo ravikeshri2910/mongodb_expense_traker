@@ -29,7 +29,7 @@ async function logInData(event) {
       
             localStorage.setItem('token', res.data.token)
          
-            window.location.href = "expenseData.html"
+            window.location.href = "expense.html"
         }
 
 

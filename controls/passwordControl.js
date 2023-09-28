@@ -60,6 +60,8 @@ const resetpassword = (req, res) => {
       res.status(200).send(`<html>
                                         <body>
                                          <form action="/password/updatepassword/${id}" method="get">
+
+                                         <h1>Reset Password</h1>
                                              <label for="newpassword">Enter New password</label>
                                              <input name="newpassword" class="new" type="password" required></input>
                                              <button id="reset">reset password</button>

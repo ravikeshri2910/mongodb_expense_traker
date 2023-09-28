@@ -1,5 +1,5 @@
 const express = require('express');
-const expenseDataCon = require('../controls/epenseDataCon')
+const expenseDataCon = require('../controls/epenseDataControl')
 const authorization = require('../middleWare/auth')
 
 const router = express.Router();
@@ -8,16 +8,16 @@ const router = express.Router();
 router.post('/expense-data',authorization.authenticateAddExpense,expenseDataCon.creatingExpense)
 
 //geting all data after login
-router.get('/get-data/:page/:pageLimit',authorization.authenticateAddExpense,expenseDataCon.gettinAllData)
+router.post('/get-data',authorization.authenticateAddExpense,expenseDataCon.gettingAllData)
 
 // deleting expense
-router.get('/raat-data/:id',authorization.authenticateAddExpense, expenseDataCon.deleteData)
+router.delete('/delete-data/:id',authorization.authenticateAddExpense, expenseDataCon.deleteData)
 
 // editing expense
 router.get('/edit-data/:id',authorization.authenticateAddExpense,expenseDataCon.editingData)
 
 // updating data
-router.post('/updated-data',authorization.authenticateAddExpense, expenseDataCon.updateData)
+router.put('/updated-data',authorization.authenticateAddExpense, expenseDataCon.updateData)
 
 
 

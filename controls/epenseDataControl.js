@@ -1,4 +1,4 @@
-const expenseData = require('../models/expenseData');
+const ExpenseData = require('../models/expenseData');
 const User = require('../models/userSinup')
 
 exports.creatingExpense = async (req, res) => {
@@ -8,7 +8,7 @@ exports.creatingExpense = async (req, res) => {
 
         const { expense, description, category } = req.body
 
-        let data = await expenseData.create({
+        let data = await ExpenseData.create({
             expense: expense,
             description: description,
             category: category,
@@ -29,13 +29,13 @@ exports.creatingExpense = async (req, res) => {
     }
 }
 
-exports.gettinAllData = async (req, res) => {
+exports.gettingAllData = async (req, res) => {
     try {
         console.log('here')
         const userId = req.user.id
         // console.log(userId)
-        const page = +req.params.page || 1
-        const pageLimit = +req.params.pageLimit || 2
+        const page = +req.body.page || 1
+        const pageLimit = +req.body.pageLimit || 2
 
         let limit = pageLimit;//2
         let skip = (page - 1) * limit;
@@ -43,10 +43,10 @@ exports.gettinAllData = async (req, res) => {
 
 
         // First, count the total number of documents matching the query
-        totalItem = await expenseData.countDocuments({ userId: userId });
+        totalItem = await ExpenseData.countDocuments({ userId: userId });
 
         // Then, retrieve the data with pagination
-        let data = await expenseData.find({
+        let data = await ExpenseData.find({
             userId: userId
         })
             .skip(skip)
@@ -76,7 +76,7 @@ exports.deleteData = async (req, res) => {
         const userId = req.user._id
 
 
-        let field = await expenseData.findOne({_id : deleteId})
+        let field = await ExpenseData.findOne({_id : deleteId})
 
         const tExpense = Number(req.user.totalExpense) - +(field.expense)
     
@@ -84,7 +84,7 @@ exports.deleteData = async (req, res) => {
         await User.updateOne({_id : userId},{ totalExpense: tExpense })
 
          
-        let data = await expenseData.findOneAndDelete({ _id: deleteId })
+        let data = await ExpenseData.findOneAndDelete({ _id: deleteId })
 
         res.status(201).json({ msg: 'deleted' })
         
@@ -97,7 +97,7 @@ exports.deleteData = async (req, res) => {
 exports.editingData = async (req, res) => {
     try {
         let dataId = req.params.id;
-        let data = await expenseData.findOne({ _id: dataId })
+        let data = await ExpenseData.findOne({ _id: dataId })
 
         res.status(201).json({ userdetails: data })
 
@@ -118,9 +118,9 @@ exports.updateData = async (req, res) => {
             category : updatecatagory
         }
 
-        let oldData = await expenseData.findOne({ _id: dataId })
-        let updatedData = await expenseData.findOneAndUpdate({ _id: dataId },update)
-        let newData = await expenseData.findOne({ _id: dataId })
+        let oldData = await ExpenseData.findOne({ _id: dataId })
+        let updatedData = await ExpenseData.findOneAndUpdate({ _id: dataId },update)
+        let newData = await ExpenseData.findOne({ _id: dataId })
 
         console.log(newData)
 
